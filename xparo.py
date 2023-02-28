@@ -40,7 +40,7 @@ class Remote():
         ▀░▀▀ ▀▀▀ ▀░░░▀ ▀▀▀▀ ░░▀░░ ▀▀▀
 
     website: https://xplauncher.me/
-    github:  lazyxcientist/xparo_remote
+    github:  https://github.com/lazyxcientist/xparo_remote
     email:   xpassistantpersonal@gmail.com
         '''
         print(sd)
@@ -117,5 +117,6 @@ if __name__ == "__main__":
     def callback(message):
         print(message)
     remote.callback = callback
+
 
     remote.send_websocket_message("hello")
