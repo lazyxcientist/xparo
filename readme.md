@@ -13,7 +13,7 @@
 
 website: https://xplauncher.me/
 
-github:  lazyxcientist/xparo_remote
+github: https://github.com/lazyxcientist/xparo_remote
 
 email:   xpassistantpersonal@gmail.com
 
