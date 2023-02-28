@@ -10,15 +10,15 @@
         █▄▄▀ █▀▀ █░▀░█ █░░█ ░░█░░ █▀▀ 
         ▀░▀▀ ▀▀▀ ▀░░░▀ ▀▀▀▀ ░░▀░░ ▀▀▀
 
-    website: <a href="https://xplauncher.me/">https://xplauncher.me/</a>
+    website: https://xplauncher.me/
     github:  lazyxcientist/xparo_remote
     email:   xpassistantpersonal@gmail.com
 
 
     requriements = websocket_client
 
-    <h3>how to use</h3>
-    '''
+    ## how to use
+    ```
     from xparo_remote.xparo import Remote
     
     remote = Remote()
@@ -30,4 +30,4 @@
 
     remote.send_websocket_message("hello")  ## this function is used to send data to websocket
 
-    '''
+    ```
