@@ -17,7 +17,7 @@ github: https://github.com/lazyxcientist/xparo_remote
 
 email:   xpassistantpersonal@gmail.com
 
-linkeding: https://www.linkedin.com/in/pankaj-jangir-xp/
+linkedin: https://www.linkedin.com/in/pankaj-jangir-xp/
 
 > requriements = websocket_client
 
