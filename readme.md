@@ -10,10 +10,14 @@
         █▄▄▀ █▀▀ █░▀░█ █░░█ ░░█░░ █▀▀ 
         ▀░▀▀ ▀▀▀ ▀░░░▀ ▀▀▀▀ ░░▀░░ ▀▀▀
 
+
 website: https://xplauncher.me/
+
 github:  lazyxcientist/xparo_remote
+
 email:   xpassistantpersonal@gmail.com
 
+linkeding: https://www.linkedin.com/in/pankaj-jangir-xp/
 
 > requriements = websocket_client
 
