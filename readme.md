@@ -21,8 +21,10 @@ linkeding: https://www.linkedin.com/in/pankaj-jangir-xp/
 
 > requriements = websocket_client
 
+-------------
 ## how to use
-```
+-------------
+```python
     from xparo_remote.xparo import Remote
     
     remote = Remote()
