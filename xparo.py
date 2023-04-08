@@ -8,15 +8,14 @@ except ImportError:
 import json
 import threading
 
-try:
-    from robot_i2c import send_i2c_message
-except:
-    print("Unable to import robot_i2c.py")
+# try:
+#     from robot_i2c import send_i2c_message
+# except:
+#     print("Unable to import robot_i2c.py")
 
 
 
-
-xparo_website = '127.0.0.1:8000'
+xparo_website = 'xparo-robot-remote.onrender.com'
 
 class Xparo(websocket.WebSocketApp):
     def __init__(self, *args, **kwargs):
@@ -53,8 +52,9 @@ class Remote():
         '''
         print(sd)
         if not self.websocket_connected:
-            socket_server='ws://'+xparo_website+'/ws/remote/'+str(email)+'/'+str(password)+'/'+str(robot)+'/'
-            self.ws = Xparo(socket_server,
+            # socket_server = 'ws://xparo-robot-remote.onrender.com/ws/remote/xparo_remote/123456789/robot/'
+            socket_server='wss://'+xparo_website+'/ws/remote/'+str(email)+'/'+str(password)+'/'+str(robot)+'/'
+            self.ws = Xparo(str(socket_server),
                             on_message=self.on_ws_message,
                             on_error=self.on_ws_error,
                             on_open=self.on_ws_open,
@@ -74,6 +74,7 @@ class Remote():
             print(e)
 
     def on_ws_message(self, ws, message):
+        # print(message)
         if self.callback:
             self.callback(message)
         else:
@@ -107,10 +108,10 @@ class Remote():
     █▀▀ █── █▀▀█ █▀▀ █▀▀ █▀▀▄ 
     █── █── █──█ ▀▀█ █▀▀ █──█ 
     ▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ▀▀▀ ▀▀▀─
-
+        retry again !!!
 
         '''
-        print("retry again !!!")
+        print(sd)
 
 
 
@@ -124,11 +125,11 @@ if __name__ == "__main__":
     remote.connect("xparo_remote","123456789","robot_id")
     def callback(message):
         print(message)
-        try:
-            send_i2c_message(message)
-        except:
+        # try:
+        #     send_i2c_message(message)
+        # except:
             
-            print("unable to send i2c message, import the package and try again")
+        #     print("unable to send i2c message, import the package and try again")
     remote.callback = callback
 
-    remote.send_websocket_message("hello")
+    # remote.send_websocket_message("hello")
