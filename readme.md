@@ -11,7 +11,7 @@
         ▀░▀▀ ▀▀▀ ▀░░░▀ ▀▀▀▀ ░░▀░░ ▀▀▀
 
 
-website: https://xplauncher.me/
+website: https://xparo-website.onrender.com/
 
 github: https://github.com/lazyxcientist/xparo_remote
 
