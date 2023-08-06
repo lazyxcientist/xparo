@@ -41,6 +41,6 @@ email:   xpassistantpersonal@gmail.com
         print(message)
     remote.callback = callback
 
-    remote.send_websocket_message("hello")  ## this function is used to send data to websocket
+    remote.send("hello")  ## this function is used to send data to websocket
 
 ```
