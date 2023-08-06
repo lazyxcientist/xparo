@@ -27,7 +27,15 @@ email:   xpassistantpersonal@gmail.com
     from xparo_remote.xparo import Remote
     
     remote = Remote()
-    remote.connect("your_user_id","your_password","robot_id")  ### username , password, robot_id
+    remote.connect("email","remote_id","secret_key_if_any")
+
+    '''
+        parameter
+            1. your_email = a unique email or robot name , used for analytics
+            2. remote_id = id of remote
+            3. secret = use only if your remote is private 
+
+    '''
 
     def callback(message): ## this fuction is called when new data is recieved from remote
         print(message)
