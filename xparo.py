@@ -126,7 +126,6 @@ class Project():
 
         self.connection_type = "rest"  #"websocket"
 
-        self.connect()
         self.config_path = os.path.join(os.path.dirname(__file__), 'config.json')
         self.config = {}
         if os.path.exists(self.config_path):
@@ -135,6 +134,7 @@ class Project():
                     self.config = json.load(f)
                 except:
                     self.config = {}
+        self.connect()
         
 
 
