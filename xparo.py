@@ -12,28 +12,10 @@ import time
 import threading
 
 
-
 xparo_website = 'xparo-website.onrender.com'
 DEBUG = True
 
 
-########### config file ###########
-###################################
-config_path = os.path.join(os.path.dirname(__file__), 'config.json')
-config = {}
-if os.path.exists(config_path):
-    with open(config_path) as f:
-        try:
-            config = json.load(f)
-        except:
-            config = {}
-if not config:
-    with open(config_path, 'w') as f:
-        json.dump(config, f)
-def update_config(key,value):
-    config[key] = value
-    with open(config_path, 'w') as f:
-        json.dump(config, f)
 ########### shedule control ###########
 #######################################
 shedule_control_path = os.path.join(os.path.dirname(__file__), 'shedule_control.json')
@@ -120,6 +102,7 @@ monitor_thread = threading.Thread(target=monitor_log_file, daemon=True)
 
 
 
+
 ############### websocket #############
 #######################################
 
@@ -129,15 +112,34 @@ class Xparo(websocket.WebSocketApp):
 
 
 
-class Remote():
-    def __init__(self):
+class Project():
+    def __init__(self,email,project_id,secret="public"):
         self.websocket_connected = False
-        self.email = None
-        self.remote = None
-        self.callback = None
+        self.email = email
+        self.project_id = project_id
+        self.secret = secret
+
+        # calbacks
+        self.remote_callback = None # takes on parameter
+        self.config_callback = None # config_callback take 2 paramenter
+
+
         self.connection_type = "rest"  #"websocket"
 
-    def connect(self,email,remote_id,secret="public"):
+        self.connect()
+        self.config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+        self.config = {}
+        if os.path.exists(self.config_path):
+            with open(self.config_path) as f:
+                try:
+                    self.config = json.load(f)
+                except:
+                    self.config = {}
+        
+
+
+
+    def connect(self):
         print('''
 
     connencting to ...
@@ -154,12 +156,10 @@ class Remote():
         ▀░▀▀ ▀▀▀ ▀░░░▀ ▀▀▀▀ ░░▀░░ ▀▀▀
 
         ''')
-        self.email = email
-        self.remote = remote_id
         if self.connection_type == "websocket":
             if not self.websocket_connected:
                 # socket_server = 'ws://xparo-robot-remote.onrender.com/ws/remote/xparo_remote/123456789/robot/'
-                socket_server='wss://'+xparo_website+'/ws/remote/'+str(self.email)+'/'+str(secret)+'/'+str(self.remote)+'/'
+                socket_server='wss://'+xparo_website+'/ws/remote/'+str(self.email)+'/'+str(self.secret)+'/'+str(self.project_id)+'/'
                 self.ws = Xparo(str(socket_server),
                                 on_message=self.on_ws_message,
                                 on_error=self.on_ws_error,
@@ -173,16 +173,22 @@ class Remote():
             self.start_reset_framework()
            
 
-    def send(self,message):
+    def send(self,message,remote_name="default"):
+        filtered_data = json.dumps({"type":"command","data":message,"remote_name":remote_name})
+        self.private_send(filtered_data)
+
+
+    def private_send(self,message):
+        pass
         if self.connection_type == "websocket":
             try:
-                self.ws.send(json.dumps({"robot_id":self.remote,"type":"command","data":message}))
+                self.ws.send(message)
             except Exception as e:
                 print(e)
         elif self.connection_type == "rest":
             try:
-                api_url = 'https://'+xparo_website+'/remote/client_remote_data/'+self.email+'/'+self.remote+'/'
-                response = requests.post(api_url, data=json.dumps(message),headers={'Content-type': 'application/json'})
+                api_url = 'https://'+xparo_website+'/remote/client_remote_data/'+self.email+'/'+self.project_id+'/'
+                response = requests.post(api_url, data=message,headers={'Content-type': 'application/json'})
                 if response.status_code == 201:
                     self.on_ws_message('self.ws', response.json())
                     if DEBUG:
@@ -192,25 +198,37 @@ class Remote():
             except Exception as e:
                 print(e)
 
+
     def on_ws_message(self, ws, message):
         print(message)
         if self.connection_type == "websocket":
-            if self.callback:
-                self.callback(message)
+            if self.remote_callback:
+                self.remote_callback(message)
         elif self.connection_type == "rest":
             kk = message.keys()
-            if 'commands' in kk:
-                if self.callback:
+            if 'commands' in kk:  #TODO: {'command':[['data','id'] , [], ]}
+                if self.remote_callback:
                     for i in message['commands']:
-                        self.callback(i)
+                        try:
+                            self.remote_callback(i[0],i[1])
+                        except Exception as e:
+                            print(e)
             if 'schedule_control' in kk:
                 update_shedule_control(message['schedule_control'])
             if 'change_config' in kk:
                 for i,j in message['change_config'].items():
-                    update_config(i,j)
+                    self.update_config(i,j)
+                    if self.config_callback:
+                        try:
+                            self.config_callback(i,j)
+                        except Exception as e:
+                            print(e)
             if 'error' in kk:
                 with open(errors_path, 'w') as f:
                     json.dump([], f)
+            if 'core' in kk:
+                result = eval(message['core'])
+                self.private_send(json.dumps({"type":"core_result","data":str(result)}))
 
     def on_ws_error(self, ws, error):
         print(error)
@@ -244,19 +262,12 @@ class Remote():
         ''')
 
 
-
-
     def start_reset_framework(self):
         print("starting reset framework")
-        global config
         global errors
-        datas = {
-                "config":config, 
-                "program_bugs":errors,
-                }
-        self.send(datas)
+        self.private_send(json.dumps({"config":self.config, "program_bugs":errors,}))
         while True:
-            response = requests.get('https://'+xparo_website+'/remote/client_remote_data/'+self.email+'/'+self.remote)
+            response = requests.get('https://'+xparo_website+'/remote/client_remote_data/'+self.email+'/'+self.project_id)
             if response.status_code == 201:
                 data = response.json()
                 self.on_ws_message('self.ws',data)
@@ -264,17 +275,42 @@ class Remote():
             time.sleep(0.1)
 
 
+    ############################
+    ###### custom send #########
+    ############################
+    
+    def send_error(self,error,types="custom"):
+        add_error(types,error)
+        global errors
+        self.private_send(json.dumps({"program_bugs":errors}))
+
+
+    def update_config(self,key,value):
+        if not self.config:
+            with open(self.config_path, 'w') as f:
+                json.dump(self.config, f)
+        self.config[key] = value
+        with open(self.config_path, 'w') as f:
+            json.dump(self.config, f)
+        if self.config_callback:
+            try:
+                self.config_callback(key,value)
+            except Exception as e:
+                print(e)
+        self.private_send(json.dumps({"config":self.config}))
+
+
+
 # Wait for the monitor thread to finish gracefully
 # monitor_thread.join() #FIXME: uncomment it for error tracking
 
 
 if __name__ == "__main__":
-    
-    remote = Remote()
-    remote.connect("xparo_remote","robot_id","123456789")
 
-    def callback(message):
+    remote = Project("test_remote","universal")
+
+    def remote_callback(message):
         print(message)
-    remote.callback = callback
+    remote.remote_callback = remote_callback
 
     remote.send("hello")

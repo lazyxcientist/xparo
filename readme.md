@@ -1,3 +1,4 @@
+```
     ██╗░░██╗██████╗░░█████╗░██████╗░░█████╗░
     ╚██╗██╔╝██╔══██╗██╔══██╗██╔══██╗██╔══██╗
     ░╚███╔╝░██████╔╝███████║██████╔╝██║░░██║
@@ -9,7 +10,7 @@
         █▀▀█ █▀▀ █▀▄▀█ █▀▀█ ▀▀█▀▀ █▀▀ 
         █▄▄▀ █▀▀ █░▀░█ █░░█ ░░█░░ █▀▀ 
         ▀░▀▀ ▀▀▀ ▀░░░▀ ▀▀▀▀ ░░▀░░ ▀▀▀
-
+```
 
 website: https://xparo-website.onrender.com/
 
@@ -20,27 +21,111 @@ email:   xpassistantpersonal@gmail.com
 
 > requriements = websocket_client
 
+<br>
+
 -------------
-## how to use
+## how to use X.P.A.R.O
 -------------
+
+step 1 : go to https://xparo-website.onrender.com/dashboard and create an new project by clicking on "add new" button.
+
+step 2 : now go to your project 
+
+step 3 : copy the project_id (or secret_key if any) of your project. 
+
+step 4 : copy API code given below and paste your keys there.
+
+step 5: for adding remote you need to hover to menu present at top corner then go to <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-controller" viewBox="0 0 16 16" data-darkreader-inline-fill="" style="--darkreader-inline-fill: currentColor;"><path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm-6.5-3h1v1h1v1h-1v1h-1v-1h-1v-1h1v-1z"></path><path d="M3.051 3.26a.5.5 0 0 1 .354-.613l1.932-.518a.5.5 0 0 1 .62.39c.655-.079 1.35-.117 2.043-.117.72 0 1.443.041 2.12.126a.5.5 0 0 1 .622-.399l1.932.518a.5.5 0 0 1 .306.729c.14.09.266.19.373.297.408.408.78 1.05 1.095 1.772.32.733.599 1.591.805 2.466.206.875.34 1.78.364 2.606.024.816-.059 1.602-.328 2.21a1.42 1.42 0 0 1-1.445.83c-.636-.067-1.115-.394-1.513-.773-.245-.232-.496-.526-.739-.808-.126-.148-.25-.292-.368-.423-.728-.804-1.597-1.527-3.224-1.527-1.627 0-2.496.723-3.224 1.527-.119.131-.242.275-.368.423-.243.282-.494.575-.739.808-.398.38-.877.706-1.513.773a1.42 1.42 0 0 1-1.445-.83c-.27-.608-.352-1.395-.329-2.21.024-.826.16-1.73.365-2.606.206-.875.486-1.733.805-2.466.315-.722.687-1.364 1.094-1.772a2.34 2.34 0 0 1 .433-.335.504.504 0 0 1-.028-.079zm2.036.412c-.877.185-1.469.443-1.733.708-.276.276-.587.783-.885 1.465a13.748 13.748 0 0 0-.748 2.295 12.351 12.351 0 0 0-.339 2.406c-.022.755.062 1.368.243 1.776a.42.42 0 0 0 .426.24c.327-.034.61-.199.929-.502.212-.202.4-.423.615-.674.133-.156.276-.323.44-.504C4.861 9.969 5.978 9.027 8 9.027s3.139.942 3.965 1.855c.164.181.307.348.44.504.214.251.403.472.615.674.318.303.601.468.929.503a.42.42 0 0 0 .426-.241c.18-.408.265-1.02.243-1.776a12.354 12.354 0 0 0-.339-2.406 13.753 13.753 0 0 0-.748-2.295c-.298-.682-.61-1.19-.885-1.465-.264-.265-.856-.523-1.733-.708-.85-.179-1.877-.27-2.913-.27-1.036 0-2.063.091-2.913.27z"></path></svg> control 
+
+
+step 6 : choose any custom remote or create a new remote
+
+
+
+
+
+-------------
+## how to use API
+-------------
+
+#### baisc setup
 ```python
-    from xparo_remote.xparo import Remote
-    
-    remote = Remote()
-    remote.connect("email","remote_id","secret_key_if_any")
+from xparo import Project
 
-    '''
-        parameter
-            1. your_email = a unique email or robot name , used for analytics
-            2. remote_id = id of remote
-            3. secret = use only if your remote is private 
+xp = Project("email","project_id","secret_key_if_any")
 
-    '''
 
-    def callback(message): ## this fuction is called when new data is recieved from remote
-        print(message)
-    remote.callback = callback
+```
 
-    remote.send("hello")  ## this function is used to send data to websocket
+
+
+#### REMOTE controller
+everytime you use remote , this function will call
+
+```python
+from xparo import Project
+
+xp = Project("email","project_id","secret_key_if_any")
+
+
+## this fuction is called when new data is recieved from remote
+
+def remote_callback(command,remote_id): 
+    print(message)
+xp.remote_callback = remote_callback
+
+# to send custom remote command or use as it remote
+
+# type 1: send remote command 
+xp.send("command") 
+
+# type2 send remote command with unique remote id
+xp.send("command","remote_id")
+
+```
+
+
+
+
+#### send custom ERROR
+```python
+from xparo import Project
+
+xp = Project("email","project_id","secret_key_if_any")
+
+# send command 
+xp.send_error("error") 
+
+# type2 send command with type of error
+xp.send_error("error","error type")
+
+## basic ERRORS are send automaticaly
+```
+
+
+
+#### get , update or add config
+this config give flexibility to change while project is deployed in realworld.
+
+you can change this at your dashboard/control/change config
+```python
+from xparo import Project
+import os
+
+xp = Project("email","project_id","secret_key_if_any")
+
+# set config json file path
+xp.config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+
+# this return dict of config
+print(xp.config)
+
+# update or add the configuration globaly
+xp.update_config("key","value")
+
+# add callback to config change
+def config_changed(key,val):
+    print(key,val)
+xp.config_callback = config_changed
 
 ```
