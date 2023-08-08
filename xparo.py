@@ -15,6 +15,7 @@ import threading
 xparo_website = 'xparo-website.onrender.com'
 DEBUG = True
 
+# 'https://'+xparo_website
 
 ########### shedule control ###########
 #######################################
@@ -134,6 +135,9 @@ class Project():
                     self.config = json.load(f)
                 except:
                     self.config = {}
+        if not self.config:
+            with open(self.config_path, 'w') as f:
+                json.dump(self.config, f)
         self.connect()
         
 
@@ -187,16 +191,33 @@ class Project():
                 print(e)
         elif self.connection_type == "rest":
             try:
-                api_url = 'https://'+xparo_website+'/remote/client_remote_data/'+self.email+'/'+self.project_id+'/'
+                api_url = 'https://'+xparo_website+'/remote/api_project_control/'+self.secret+'/'+self.project_id
                 response = requests.post(api_url, data=message,headers={'Content-type': 'application/json'})
                 if response.status_code == 201:
                     self.on_ws_message('self.ws', response.json())
                     if DEBUG:
                         print(f"command sent successfully {message}")
+                    return True
                 else:
-                    print("unable to send command",str(response))
+                    print(str(response))
+                    print('''
+Truble shooting:
+    1. internal server error. make sure you provide correct project id and secret key
+    2. check your project id correct ( available in project dashboard home page )
+    3. make sure your secret key is correct and acitvated (if any)
+    
+''')
+                    return False
             except Exception as e:
                 print(e)
+                print('''
+Truble shooting:
+    1. check your internet connection
+    2. if that not working download latest version of xparo or from github = https://github.com/lazyxcientist/xparo
+    3. try to switch to websocket connection or rest framework
+    
+''')
+                return False
 
 
     def on_ws_message(self, ws, message):
@@ -265,14 +286,18 @@ class Project():
     def start_reset_framework(self):
         print("starting reset framework")
         global errors
-        self.private_send(json.dumps({"config":self.config, "program_bugs":errors,}))
-        while True:
-            response = requests.get('https://'+xparo_website+'/remote/client_remote_data/'+self.email+'/'+self.project_id)
-            if response.status_code == 201:
-                data = response.json()
-                self.on_ws_message('self.ws',data)
+        check = self.private_send(json.dumps({"config":self.config, "program_bugs":errors,"initiliaze":True}))
+        if check:
+            while True:
+                response = requests.get('https://'+xparo_website+'/remote/api_project_control/'+self.secret+'/'+self.project_id)
+                if response.status_code == 201:
+                    data = response.json()
+                    self.on_ws_message('self.ws',data)
 
-            time.sleep(0.1)
+                time.sleep(0.1)
+        else:
+            print("unable to connect with X.P.A.R.O server")
+            self.on_ws_close('self.ws')
 
 
     ############################
@@ -286,9 +311,6 @@ class Project():
 
 
     def update_config(self,key,value):
-        if not self.config:
-            with open(self.config_path, 'w') as f:
-                json.dump(self.config, f)
         self.config[key] = value
         with open(self.config_path, 'w') as f:
             json.dump(self.config, f)
@@ -307,7 +329,7 @@ class Project():
 
 if __name__ == "__main__":
 
-    remote = Project("test_remote","universal")
+    remote = Project("test_remote","e99dd21e-f7b2-4a4c-a74f-4658ad4dd2bd")
 
     def remote_callback(message):
         print(message)
