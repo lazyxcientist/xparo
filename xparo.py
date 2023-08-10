@@ -174,7 +174,8 @@ class Project():
             else:
                 print("already connected to xparo remote")
         elif self.connection_type == "rest":
-            self.start_reset_framework()
+            threading.Thread(target=self.start_reset_framework).start()
+            # self.start_reset_framework()
            
 
     def send(self,message,remote_name="default"):
@@ -231,7 +232,8 @@ Truble shooting:
                 if self.remote_callback:
                     for i in message['commands']:
                         try:
-                            self.remote_callback(i[0],i[1])
+                            # self.remote_callback(i[0],i[1])
+                            self.remote_callback(str(i))
                         except Exception as e:
                             print(e)
             if 'schedule_control' in kk:
