@@ -12,7 +12,7 @@
         ▀░▀▀ ▀▀▀ ▀░░░▀ ▀▀▀▀ ░░▀░░ ▀▀▀
 ```
 
-website: https://xparo-website.onrender.com/
+website: https://xparo.in/
 
 github: https://github.com/lazyxcientist/xparo_remote
 
@@ -27,7 +27,7 @@ email:   xpassistantpersonal@gmail.com
 ## how to use X.P.A.R.O
 -------------
 
-step 1 : go to https://xparo-website.onrender.com/dashboard and create an new project by clicking on "add new" button.
+step 1 : go to https://xparo.in and create an new project by clicking on "add new" button.
 
 step 2 : now go to your project 
 
